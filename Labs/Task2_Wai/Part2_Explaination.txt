@@ -1,0 +1,16 @@
+Ka Shing Wai
+Task 2: Explaination for part 2
+
+According to the code, fq fork a process therefore produces a child process.
+Since parent process does not have to wait until it's child process finish, parent process will execute first(fq > 0), which reassigns b = a + b - 5.
+Therefore, a = 10 and b = 30.
+
+Now fq == 0, which will execute the first child process by reassigning a = a + b;
+The result for the first child process will become a = 35 and b = 25.
+
+After the first child process executes, fr fork another process which generates another child.
+The second child process first assigns b = b + 20, giving the results of a = 35 and b = 45.
+
+Finally the code hits to the fr == 0, reassigns a = (a * b) + 30, giving the results of a = 905 and b = 25.
+
+We observed that when we are running a large # of times of the exec file, we will see the order of the output changes. This is depends on the CPU speed, let say we have x == 5, forking two process (x++ & x--), if the desire output is [4,5,6], if we run the process for let say 10000 time, the output might become [5,4,6].
