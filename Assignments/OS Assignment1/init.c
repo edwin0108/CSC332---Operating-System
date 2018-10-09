@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+#include <wait.h>
 
 int main()
 {
