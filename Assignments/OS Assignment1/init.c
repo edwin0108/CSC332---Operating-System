@@ -3,9 +3,10 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+#include <string.h>
 #include <wait.h>
 
-int main()
+int main(int argc, char* argv[])
 {
     pid_t cpu_id, scheduler_id;
     pid_t pid;
@@ -24,7 +25,13 @@ int main()
     if(scheduler_id == 0)
     {
         printf("Scheduler pid is: %d\n", getpid());
-        execl("/usr/bin/java", "/usr/bin/java", "-cp", "Scheduler.jar", "Scheduler", NULL);
+        if (argc > 1)
+        {
+            if(strcmp(argv[1],"priority") == 0)
+                execl("/usr/bin/java", "/usr/bin/java", "-cp", "Scheduler.jar", "Scheduler", "priority", NULL);
+        }
+        else
+            execl("/usr/bin/java", "/usr/bin/java", "-cp", "Scheduler.jar", "Scheduler", NULL);
         perror("Scheduler");
         exit(EXIT_FAILURE);
     }

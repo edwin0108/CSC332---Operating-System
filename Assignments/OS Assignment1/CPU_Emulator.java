@@ -10,7 +10,6 @@ public class CPU_Emulator {
     public static void main(String[] args) throws IOException, ClassNotFoundException
     {
         ServerSocket listener = new ServerSocket(9000);
-        listener.setSoTimeout(2000);
         Socket socket = null;
         try
         {

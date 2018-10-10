@@ -1,6 +1,7 @@
 import java.io.Serializable;
+import java.util.Comparator;
 
-public class process implements Serializable
+public class process implements Serializable, Comparable<process>
 {
     public String program_name;
     public int pid;
@@ -42,5 +43,10 @@ public class process implements Serializable
                 + interruptable + ","
                 + est_run_time + ","
                 + est_remain_time);
+    }
+
+    @Override
+    public int compareTo(process o) {
+        return this.priority > o.priority ? 1 : (this.priority < o.priority ? -1 : 0);
     }
 }
