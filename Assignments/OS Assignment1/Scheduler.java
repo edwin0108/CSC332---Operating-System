@@ -34,7 +34,7 @@ public class Scheduler {
 
         while (priority_scheduler.peek() != null)
         {
-            process input_process = priority_scheduler.remove();
+            process input_process = priority_scheduler.poll();
             process output_process = run(input_process);
             if(output_process.est_remain_time == 0)
             {
