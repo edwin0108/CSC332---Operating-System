@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
   int x = 10;
-  int y = 4;
+  int y = 10;
   FILE *inpf;
   inpf = fopen("input_file.txt", "w");
   for (int i=0; i<x; i++){
