@@ -18,7 +18,6 @@ FILE *fp1, *fp2, *fp3, *fp4;			/* File Pointers */
 #define BUFSIZE 6				// Changed to 6 for calculating wait time  
 #define PERMS 0666 //0666 - To grant read and write permissions 
 
-int* buffer;			// Shared memory array
 int mutex;    // semaphore variable : Mutex
 
 // ####################### ( Added Code Ends Here ) ###########################################
@@ -59,11 +58,6 @@ main()
 	printf("\n unable to create shared memory");
 	return;
 	}
-	if((buffer=(int*)shmat(shmid,(char*)0,0)) == (int*)-1)
-	{
-	printf("\n Shared memory allocation error\n");
-	exit(1);
-	}
 
 	// semaphore creation
 	if((mutex=semget(IPC_PRIVATE,1,PERMS | IPC_CREAT)) == -1)
@@ -74,15 +68,6 @@ main()
 
 	// initialze the semaphore 	
 	sem_create(mutex,1);
-	
-	// Initialization buffer for different processes to keep track of waiting time
-	
-	buffer[0] = 0;		// Wait Time For parent process
-	buffer[1] = 0;		// Wait Time For Son-1 Process
-	buffer[2] = 0;		// Wait TIme For Son-2 Process
-	buffer[3] = dad_pid;
-	buffer[4] = son1_pid;
-	buffer[5] = son2_pid;
 
  // ######################## (Added code Ends Here) ###############################################
 	
@@ -101,12 +86,7 @@ main()
 		N=5;
 		for(i=1;i<=N; i++)
 		{	
-			buffer[3] = dad_pid;
 			P(mutex); // ################ ( Mutex semaphore Used ) ##############
-			if ( buffer[4] != 0 )			// Checking and updating waiting time
-				buffer[1]++;
-			if ( buffer[5] != 0 )
-				buffer[2]++;   
 			
 			printf("Dear old dad is trying to do update.\n");
 			fp1 = fopen("balance", "r+");
@@ -124,7 +104,6 @@ main()
 			printf("Dear old dad is done doing update. \n");
 			sleep(rand()%5);	/* Go have coffee for 0-4 sec. */
 			
-			buffer[3] = 0;
 			V(mutex); // ################ ( Mutex semaphore Used ) ##############
 		}
 	}
@@ -146,12 +125,7 @@ main()
 			flag = FALSE;
 			while(flag == FALSE) 
 			{	
-				buffer[4] = son1_pid;
 				P(mutex); //  ################ ( Mutex semaphore Used ) ##############
-				if ( buffer[3] != 0 )			// Checking and updating waiting time
-					buffer[0]++;
-				if ( buffer[5] != 0 )
-					buffer[2]++;  
 					
 				fp3 = fopen("attempt" , "r+");
 				fscanf(fp3, "%d", &N_Att);
@@ -191,7 +165,6 @@ main()
 						fclose(fp3);
 					}
 				}
-				buffer[4] = 0;
 				V(mutex); // ################ ( Mutex semaphore Used ) ##############
 			}
 		
@@ -213,12 +186,7 @@ main()
 				flag1 = FALSE;
 				while(flag1 == FALSE) 
 				{	
-					buffer[5] = son2_pid;
 					P(mutex); //  ################ ( Mutex semaphore Used ) ##############
-					if ( buffer[3] != 0 ) 			// Checking and updating waiting time
-						buffer[0]++;
-					if ( buffer[4] != 0 )
-						buffer[1]++;	
 					
 					fp3 = fopen("attempt" , "r+");
 					fscanf(fp3, "%d", &N_Att);
@@ -261,7 +229,6 @@ main()
 							fclose(fp3);
 						}
 					}
-					buffer[5] = 0;
 					V(mutex); // ################ ( Mutex semaphore Used ) ##############
 				}
 			}
@@ -277,7 +244,7 @@ main()
 				pid = wait(&status);
 				printf("Process(pid = %d) exited with the status %d. \n", pid, status);
 				
-				printf("Dad_process waited: %d times\nSon1_Process Waited: %d times\nSon2_Process waited: %d times\n",buffer[0],buffer[1],buffer[2]); // Printing out wait times for N attempts
+				printf("Remaining wait times:%d\n",N_Att); // Printing out wait times for N attempts
 			}
 			exit(0);
 		}
