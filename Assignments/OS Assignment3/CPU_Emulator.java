@@ -136,7 +136,7 @@ public class CPU_Emulator {
                         System.out.println("Average wait time: " + sum_wait_time / 14.0);
                         System.out.println(
                                 "-----------------------------------------------------------");
-                        try(FileWriter fw = new FileWriter("myfile.txt", true);
+                        try(FileWriter fw = new FileWriter("AlgorithmData.txt", true);
                             BufferedWriter bw = new BufferedWriter(fw);
                             PrintWriter out = new PrintWriter(bw))
                                 {
@@ -171,9 +171,9 @@ public class CPU_Emulator {
         while(scheduledTask.peek() != null || SchedulingQueue.peek() != null || flag == true){
             if(timer == currentProcess.arrival_time){
                 //send the currentTask to scheduleQueue
+                SchedulingQueue.add(currentProcess);
                 System.out.println("Scheduler: " + currentProcess.program_name + " entered the schedulingQueue at: "
                         + timer);
-                SchedulingQueue.add(currentProcess);
                 if(scheduledTask.peek() != null){
                     currentProcess = scheduledTask.remove();
                 }
@@ -181,6 +181,8 @@ public class CPU_Emulator {
                 //first process is passing to the scheduling queue
                 if(flag == false && SchedulingQueue.peek() != null){
                     CPUProcess = SchedulingQueue.remove();
+                    System.out.println(
+                            "CPU Emulator: Ready to process " + CPUProcess.program_name + " at time " + timer);
                     flag = true;
                 }
             }
@@ -189,23 +191,26 @@ public class CPU_Emulator {
                 if(CPUProcess.est_remain_time != 0){
                     if(fixedTime != 0){
                         CPUProcess.est_remain_time --;
+                        //CPUProcess.turnaround_time ++;
                         fixedTime --;
                         if(SchedulingQueue.peek() != null){
                             for(process pendingProcess : SchedulingQueue){
                                 pendingProcess.waiting_time ++;
+                                //pendingProcess.turnaround_time ++;
                             }
                         }
                     }
                     else {
                         process next_process = null;
-                        System.out.println("Cpu Emulator: End of time quantum. " + CPUProcess.program_name
+                        System.out.println("CPU Emulator: End of time quantum. " + CPUProcess.program_name
                                 + " at time " + timer + ". Estimate Remaining Time: " + CPUProcess.est_remain_time);
                         context_switch ++; // context switch to next process
                         timer ++; // add 1 units context switch
                         // check if any new process comes
                         if (timer == currentProcess.arrival_time) {
-                            next_process = CPUProcess;
+                            next_process = currentProcess;
                             next_process.waiting_time += 1;
+                            //next_process.turnaround_time ++;
                             System.out.println("Scheduler: " + next_process.program_name
                                     + " is entered the scheduling Queue at time " + timer);
                             if (scheduledTask.peek() != null) {
@@ -214,9 +219,9 @@ public class CPU_Emulator {
                         }
                         // add one unit of wait time an turnaround time in ready scheduler
                         if (SchedulingQueue.peek() != null) {
-
                             for(process pendingProcess : SchedulingQueue){
                                 pendingProcess.waiting_time ++;
+                                //pendingProcess.turnaround_time ++; 
                             }
                         }
                         // one process arrives during context switch
@@ -227,12 +232,12 @@ public class CPU_Emulator {
                         timer += 1; // add 1 units context switch
                         // check if any new process comes
                         if (timer == currentProcess.arrival_time) {
-                            next_process = CPUProcess;
+                            next_process = currentProcess;
                             next_process.waiting_time += 1;
                             System.out.println("Scheduler: " + next_process.program_name
                                     + " is entered the scheduling Queue at time " + timer);
                             if (scheduledTask.peek() != null) {
-                                CPUProcess = scheduledTask.remove();
+                                currentProcess = scheduledTask.remove();
                             }
                         }
                         // add one unit of wait time an turnaround time in ready scheduler
@@ -250,6 +255,7 @@ public class CPU_Emulator {
                         }
 
                         CPUProcess.waiting_time += 2;
+                        //CPUProcess.turnaround_time += 2;
                         if (SchedulingQueue.peek() != null) {
 
                             process temp = CPUProcess;
@@ -268,36 +274,38 @@ public class CPU_Emulator {
                     completedProcess.add(CPUProcess);
                     System.out.println("CPUEmulator: " + CPUProcess.program_name + " is finished at time " + timer);
                     if(SchedulingQueue.peek() != null){
-                        context_switch ++ ;
+                        context_switch ++;
                         //adding time 2 times to prevent(check) skipping process's arrivial time when context switch triggered.
                         timer ++ ;
-                        if(timer == CPUProcess.arrival_time){
-                            SchedulingQueue.add(CPUProcess);
-                            System.out.println("Scheduler: " + CPUProcess.program_name
+                        if(timer == currentProcess.arrival_time){
+                            SchedulingQueue.add(currentProcess);
+                            System.out.println("Scheduler: " + currentProcess.program_name
                                     + " is entered the scheduling Queue at time " + timer);
                             if(scheduledTask.peek() != null){
-                                CPUProcess = scheduledTask.remove();
+                                currentProcess = scheduledTask.remove();
                             }
                         }
                         timer ++;
-                        if(timer == CPUProcess.arrival_time){
-                            SchedulingQueue.add(CPUProcess);
-                            System.out.println("Scheduler: " + CPUProcess.program_name
+                        if(timer == currentProcess.arrival_time){
+                            SchedulingQueue.add(currentProcess);
+                            System.out.println("Scheduler: " + currentProcess.program_name
                                     + " is entered the scheduling Queue at time " + timer);
                             if(scheduledTask.peek() != null){
-                                CPUProcess = scheduledTask.remove();
+                                currentProcess = scheduledTask.remove();
                             }
                         }
                         for(process pendingProcess : SchedulingQueue){
                             pendingProcess.waiting_time += 2;
+                            //pendingProcess.turnaround_time += 2;
                         }
                         CPUProcess = SchedulingQueue.remove();
+                        fixedTime = timeQuantum;
                         System.out.println("Cpu Emulator: Ready to process " + CPUProcess.program_name + " at time "
                                 + timer + ". Estimate Remaining Time: " + CPUProcess.est_remain_time);
                         CPUProcess.est_remain_time --;
-                        fixedTime = timeQuantum;
                         fixedTime--;
                     }
+                    
                     else{
                         flag = false;
                         int sum_wait_time = 0;
@@ -309,11 +317,12 @@ public class CPU_Emulator {
                             }
                         }
                         System.out.println("Total time used: " + timer);
+                        System.out.println("Context switch in total: " + context_switch);
                         System.out.println("Longest wait time: " + longest_wait_time);
                         System.out.println("Average wait time: " + sum_wait_time / 14.0);
                         System.out.println(
                                 "-----------------------------------------------------------");
-                        try(FileWriter fw = new FileWriter("myfile.txt", true);
+                        try(FileWriter fw = new FileWriter("AlgorithmData.txt", true);
                             BufferedWriter bw = new BufferedWriter(fw);
                             PrintWriter out = new PrintWriter(bw))
                         {

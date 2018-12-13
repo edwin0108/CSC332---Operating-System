@@ -8,12 +8,12 @@ plt.ylabel('Time')
 
 # Make a testing dataset:
 height = []
-with open('myfile.txt', 'rt') as infile:
+with open('AlgorithmData.txt', 'rt') as infile:
     lines = infile.read().split(',')
 for i in range(0, len(lines) - 1):
     height.append(int(lines[i]))
 print(height)
-bars = ('FIFO', 'SJN', 'PRIORITY', 'RR - 10', 'RR - 100', 'RR - 1000', 'RR(SRTN)', 'RR(Priority)')
+bars = ('FIFO', 'SJN', 'PRIORITY', 'RR-10', 'RR-100', 'RR-1000', 'RR(SRTN)', 'RR(Priority)')
 y_pos = range(len(bars))
  
 # Create bars
