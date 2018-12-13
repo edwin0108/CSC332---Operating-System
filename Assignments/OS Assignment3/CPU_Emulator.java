@@ -6,7 +6,7 @@ import java.io.IOException;
 public class CPU_Emulator {
 
     //NOTE: TURNAROUND TIME IS NOT YET IMPLEMENTED
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
         Queue<process> scheduledTask = readfile();
         Queue<process> schedulerQueue = null;
@@ -136,6 +136,15 @@ public class CPU_Emulator {
                         System.out.println("Average wait time: " + sum_wait_time / 14.0);
                         System.out.println(
                                 "-----------------------------------------------------------");
+                        try(FileWriter fw = new FileWriter("myfile.txt", true);
+                            BufferedWriter bw = new BufferedWriter(fw);
+                            PrintWriter out = new PrintWriter(bw))
+                                {
+                                    out.print((sum_wait_time/14) + ",");
+                                }
+                                catch(IOException e){
+                                    e.printStackTrace();
+                                }
                     }
                 }
             }
@@ -304,6 +313,15 @@ public class CPU_Emulator {
                         System.out.println("Average wait time: " + sum_wait_time / 14.0);
                         System.out.println(
                                 "-----------------------------------------------------------");
+                        try(FileWriter fw = new FileWriter("myfile.txt", true);
+                            BufferedWriter bw = new BufferedWriter(fw);
+                            PrintWriter out = new PrintWriter(bw))
+                        {
+                            out.print((sum_wait_time/14) + ",");
+                        }
+                        catch(IOException e){
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
