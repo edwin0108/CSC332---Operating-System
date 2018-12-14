@@ -1,9 +1,13 @@
 #!/bin/bash
 
 # to display the graph
-# sudo pip install numpy &&
-# sudo pip install matplotlib &&
-# sudo apt-get install python-tk &&
+sudo apt install python-pip
+sudo pip install numpy
+sudo pip install matplotlib
+sudo apt-get install python-tk
+
+#remove AlgorithmData to prevent error
+rm AlgorithmData.txt
 
 # run all java files
 javac *.java
