@@ -10,6 +10,7 @@ public class process
     public int est_remain_time;
     public int waiting_time;
     public int time_quantum;
+    public int turnaround_time;
 
     public process(String proc)
     {
@@ -24,5 +25,6 @@ public class process
         est_run_time = Integer.parseInt(split[6]);
         est_remain_time = Integer.parseInt(split[7]);
         waiting_time = 0;
+        turnaround_time = 0;
     }
 }
